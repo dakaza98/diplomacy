@@ -70,5 +70,47 @@ class TestGetOrders(unittest.TestCase):
         self.assertTrue(self.check_sorted(orders['AUSTRIA'], ['A PAR H']))
 
 
+class TestGetOrderableLocations(unittest.TestCase):
+    def setUp(self):
+        self.game = Game()
+
+    def test_build_phase(self):
+        self.game.clear_units()
+        self.game.set_current_phase("W1901A")
+        locs = self.game.get_orderable_locations()
+
+        self.assertEqual(locs["FRANCE"], ['BRE', 'MAR', 'PAR'])
+
+    def test_no_build_options(self):
+        self.game.set_current_phase("W1901A")
+        locs = self.game.get_orderable_locations()
+
+        self.assertEqual(locs["FRANCE"], [])
+
+    def test_disband_units(self):
+        self.game.set_current_phase("W1901A")
+
+        # Steal PAR from FRANCE
+        self.game.set_centers("GERMANY", ["PAR"])
+        locs = self.game.get_orderable_locations()
+
+        # Disband a unit
+        self.assertEqual(locs["FRANCE"], ["BRE", "MAR", "PAR"])
+
+    def test_retreat(self):
+        self.game.set_current_phase("S1901R")
+        self.assertEqual(self.game.get_current_phase()[-1], "R")
+        locs = self.game.get_orderable_locations()
+
+        self.assertEqual(locs["FRANCE"], [])
+
+    def test_movement(self):
+        self.game.set_current_phase("S1901M")
+        locs = self.game.get_orderable_locations()
+
+        self.assertEqual(locs["FRANCE"], ["BRE", "MAR", "PAR"])
+        
+
+
 if __name__ == '__main__':
     unittest.main()
