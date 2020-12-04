@@ -56,6 +56,19 @@ class TestGetOrders(unittest.TestCase):
         self.assertTrue(self.check_sorted(orders['FRANCE'], ['A MAR B']))
         self.assertTrue(self.check_sorted(orders['AUSTRIA'], []))
 
+    def test_no_check_rule(self):
+        game = Game()
+        game.set_current_phase("S1901M")
+        game.add_rule("NO_CHECK")
+
+        # Invalid move
+        game.set_orders('FRANCE', ['A PAR - EDI', 'F MAR B'])
+        game.set_orders('AUSTRIA', ['A PAR H'])
+        orders = game.get_orders()
+
+        self.assertTrue(self.check_sorted(orders['FRANCE'], ['A PAR - EDI', 'F MAR B']))
+        self.assertTrue(self.check_sorted(orders['AUSTRIA'], ['A PAR H']))
+
 
 if __name__ == '__main__':
     unittest.main()
